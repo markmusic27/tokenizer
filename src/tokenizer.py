@@ -1,4 +1,6 @@
 from .utils import get_frequency, merge
+import os
+import json
 
 
 class Tokenizer:
@@ -14,7 +16,7 @@ class Tokenizer:
         # Create empty merge rules
         self.merge: dict[tuple[int, int], int] = {}
         
-        self.trained = False
+        self.loaded = False
 
         
     
@@ -50,14 +52,14 @@ class Tokenizer:
             self.merge[highest_pair] = i
             
         
-        self.trained = True
+        self.loaded = True
         self.token_to_id = {v: k for k, v in self.vocab.items()}
         
         return tokens
         
     def encode(self, text: str) -> list[int]:
-        if not self.trained:
-            raise ValueError("The tokenizer has not yet been trained")
+        if not self.loaded:
+            raise ValueError("The tokenizer has not yet been loaded (try loading or training)")
         
         tokens = list(text.encode("utf-8"))
         
@@ -87,8 +89,8 @@ class Tokenizer:
         
     
     def decode(self, tokens: list[int]) -> str:
-        if not self.trained:
-            raise ValueError("The tokenizer has not yet been trained")
+        if not self.loaded:
+            raise ValueError("The tokenizer has not yet been loaded (try loading or training)")
             
         raw = b""
         
@@ -96,5 +98,32 @@ class Tokenizer:
             raw += self.vocab[token]
 
         return raw.decode("utf-8", errors="replace")
+    
+    def load(self, filepath):
+        print("load merge and vocab")
+    
+    def save(self, id) -> str:
+        if not self.loaded:
+            raise ValueError("Cannot save the model because it has not been loaded (try loading or training)")
+        
+        save_dir = f"saved_models/v_{id}"
+        os.makedirs(save_dir, exist_ok=True)
+
+        # Save merges.txt
+        merges_path = os.path.join(save_dir, "merges.txt")
+        pipe_column = 20 
+        with open(merges_path, "w", encoding="utf-8") as f:
+            f.write(f"#version: {id}\n")
+            for pair in self.merge:
+                if isinstance(pair, tuple):
+                    left = pair[0]
+                    left_text = self.vocab[left].decode("utf-8", errors="replace")
+                    right = pair[1]
+                    right_text = self.vocab[right].decode("utf-8", errors="replace")
+                    merge_str = f"{left} {right}"
+                    line = merge_str.ljust(pipe_column) + f"-> '{left_text}' '{right_text}'"
+                    f.write(line + "\n")
+        # (vocab.json code remains commented out)
+        return save_dir
     
     

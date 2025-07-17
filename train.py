@@ -69,8 +69,6 @@ As Canada, Mexico and the United States were awarded automatic berths as co-host
 
 encoder = Tokenizer(vocab_size=270)
 
-e = encoder.train(data)
+encoder.train(data)
 
-en = encoder.encode(data)
-
-print(e == en)
+encoder.save(id=1)
