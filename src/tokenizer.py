@@ -13,6 +13,7 @@ class Tokenizer:
             
         # Initialize vocabulary to be base characters in UTF-8
         self.vocab: dict[int, bytes] = {i: bytes([i]) for i in range(256)}
+        self.token_to_id: dict[bytes, int] = {}
         
         # Create empty merge rules
         self.merge: dict[tuple[int, int], int] = {}
@@ -107,7 +108,7 @@ class Tokenizer:
         if not (os.path.exists(merge_path) and os.path.exists(vocab_path)):
             raise FileNotFoundError("Both merges.txt and vocab.json must be present in the specified filepath.")
         
-        # Read merges.txt
+        # Read and load merges.txt
         with open(merge_path, "r", encoding="utf-8") as f:
             i = 0
             for line in f:
@@ -129,10 +130,16 @@ class Tokenizer:
                 self.merge[pair] = i
                 i += 1
         
-        print(self.merge)
-                
+        # Read and load vocab.json
+        with open(vocab_path, "r", encoding="utf-8") as f:
+            vocab_data = json.load(f)
+            
+        for i, (key, value) in enumerate(vocab_data.items()):
+            token = key.encode("utf-8")
+            self.vocab[value] = token
+            self.token_to_id[token] = value
         
-        # TODO: Read vocab.json and set self.loaded = True
+        self.loaded = True
     
     
     def save(self, id) -> str:
