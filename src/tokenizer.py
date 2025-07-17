@@ -52,7 +52,12 @@ class Tokenizer:
     def encode():
         print("encode")
     
-    def decode():
-        print("")
+    def decode(self, tokens: list[int]) -> str:
+        raw = b""
+        
+        for token in tokens:
+            raw += self.vocab[token]
+
+        return raw.decode("utf-8", errors="replace")
     
     
