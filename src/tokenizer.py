@@ -1,6 +1,7 @@
 from .utils import get_frequency, merge
 import os
 import json
+import re
 
 
 class Tokenizer:
@@ -100,7 +101,39 @@ class Tokenizer:
         return raw.decode("utf-8", errors="replace")
     
     def load(self, filepath):
-        print("load merge and vocab")
+        merge_path = os.path.join(filepath, "merges.txt")
+        vocab_path = os.path.join(filepath, "vocab.json")
+        
+        if not (os.path.exists(merge_path) and os.path.exists(vocab_path)):
+            raise FileNotFoundError("Both merges.txt and vocab.json must be present in the specified filepath.")
+        
+        # Read merges.txt
+        with open(merge_path, "r", encoding="utf-8") as f:
+            i = 0
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                
+                tokens = re.findall(r'\d+', line)
+                
+                if len(tokens) != 2:
+                    raise IndexError(f"Expected 2 tokens, but got {len(tokens)} in merge: \n{line}")
+                
+                if len(tokens) != 2:
+                    raise IndexError(f"Expected 2 tokens, but got {len(tokens)} in merge: \n{line}")
+                
+                tokens = list(map(int, tokens))
+                pair: tuple[int, int] = (tokens[0], tokens[1])
+                
+                self.merge[pair] = i
+                i += 1
+        
+        print(self.merge)
+                
+        
+        # TODO: Read vocab.json and set self.loaded = True
+    
     
     def save(self, id) -> str:
         if not self.loaded:
@@ -123,7 +156,25 @@ class Tokenizer:
                     merge_str = f"{left} {right}"
                     line = merge_str.ljust(pipe_column) + f"-> '{left_text}' '{right_text}'"
                     f.write(line + "\n")
-        # (vocab.json code remains commented out)
+        
+        # Save vocab.json
+        vocab_path = os.path.join(save_dir, "vocab.json")
+        def serialize_value(v):
+            if isinstance(v, bytes):
+                return v.decode("utf-8", errors="replace")
+            elif isinstance(v, tuple):
+                return list(v)
+            else:
+                return v
+        
+        vocab_str = {}
+        for k, v in self.vocab.items():
+            key_str = self.vocab[k].decode("utf-8", errors="replace")
+            vocab_str[key_str] = k
+        
+        with open(vocab_path, "w", encoding="utf-8") as f:
+            json.dump(vocab_str, f, ensure_ascii=False, indent=2)
+        
         return save_dir
     
     
