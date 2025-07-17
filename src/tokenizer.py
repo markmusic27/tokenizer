@@ -12,7 +12,9 @@ class Tokenizer:
         self.vocab: dict[int, bytes] = {i: bytes([i]) for i in range(256)}
         
         # Create empty merge rules
-        self.merge: list[int] = []
+        self.merge: dict[tuple[int, int], int] = {}
+        
+        self.trained = False
 
         
     
@@ -45,14 +47,49 @@ class Tokenizer:
             
             # Update vocab and merge rules
             self.vocab[new_id] = self.vocab[highest_pair[0]] + self.vocab[highest_pair[1]]
-            self.merge.append(highest_pair)
+            self.merge[highest_pair] = i
+            
+        
+        self.trained = True
+        self.token_to_id = {v: k for k, v in self.vocab.items()}
         
         return tokens
         
-    def encode():
-        print("encode")
+    def encode(self, text: str) -> list[int]:
+        if not self.trained:
+            raise ValueError("The tokenizer has not yet been trained")
+        
+        tokens = list(text.encode("utf-8"))
+        
+        # Try to merge as much as possible. Will break when no merges are left
+        while True:
+            
+            if len(tokens) < 2:
+                break
+            
+            pairs = [(tokens[i], tokens[i+1]) for i in range(len(tokens) - 1)]
+            
+            # Create tuple of (pair, rank)
+            ranked = [(pair, self.merge[pair]) for pair in pairs if pair in self.merge]
+            
+            # No more mergeable pairs
+            if not ranked:
+                break  
+            
+            best_pair, _ = min(ranked, key=lambda x: x[1])
+            
+            merged_bytes = self.vocab[best_pair[0]] + self.vocab[best_pair[1]]
+            new_id = self.token_to_id[merged_bytes]
+            
+            merge(tokens, best_pair, new_id)
+    
+        return tokens
+        
     
     def decode(self, tokens: list[int]) -> str:
+        if not self.trained:
+            raise ValueError("The tokenizer has not yet been trained")
+            
         raw = b""
         
         for token in tokens:
