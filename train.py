@@ -1,7 +1,7 @@
 from src.tokenizer import Tokenizer
 
-encoder = Tokenizer(vocab_size=500)
+encoder = Tokenizer(vocab_size=270)
 
-e = encoder.train("Hello world")
+e = encoder.train("Hello world my name is mark music")
 
-print(e)
+print(encoder.merge)

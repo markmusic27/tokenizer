@@ -9,18 +9,15 @@ class Tokenizer:
         self.vocab_size = vocab_size
             
         # Initialize vocabulary to be base characters in UTF-8
-        self.vocab: dict[int, int] = {}
+        self.vocab: dict[int, bytes] = {i: bytes([i]) for i in range(256)}
         
-        for i in range(256):
-            self.vocab[i] = i
-            
         # Create empty merge rules
         self.merge: list[int] = []
 
         
     
     def train(self, text: str) -> list[int]:
-        tokens = [ord(char) for char in text]
+        tokens = list(text.encode("utf-8"))
         
         for i in range(self.vocab_size - 256):
             freq = get_frequency(tokens)
@@ -47,9 +44,9 @@ class Tokenizer:
             merge(tokens, highest_pair, new_id)
             
             # Update vocab and merge rules
-            self.vocab[new_id]=highest_pair
+            self.vocab[new_id] = self.vocab[highest_pair[0]] + self.vocab[highest_pair[1]]
             self.merge.append(highest_pair)
-            
+        
         return tokens
         
     def encode():
