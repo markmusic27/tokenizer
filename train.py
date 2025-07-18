@@ -3,7 +3,7 @@ from src.utils import regex_tokenize, GPT4_PATTERN
 import time
 
 # HYPERPARAMETERS
-DATASET = "assets/dataset.txt"
+DATASET = ["feynman.txt", "homo_deus.txt", "little_women.txt", "the_love_hypothesis.txt"]
 VOCAB_SIZE = 50256
 REGEX_PATTERN = GPT4_PATTERN
 SAVED_TO = "homodeus"
@@ -11,11 +11,17 @@ SAVED_TO = "homodeus"
 # Load the dataset
 print("Loading dataset...")
 start_time = time.time()
-with open(DATASET, "r", encoding="utf-8") as f:
-    dataset = f.read()
+dataset = ""
+for filename in DATASET:
+    filepath = f"assets/{filename}"
+    print(f"Loading {filename}...")
+    with open(filepath, "r", encoding="utf-8") as f:
+        file_content = f.read()
+        dataset += file_content
+        print(f"  {filename}: {len(file_content):,} characters")
 
 load_time = time.time() - start_time
-print(f"Dataset loaded: {len(dataset)} characters ({load_time:.2f}s)")
+print(f"Dataset loaded: {len(dataset):,} characters total ({load_time:.2f}s)")
 
 # Initialize tokenizer
 print("Initializing tokenizer...")
