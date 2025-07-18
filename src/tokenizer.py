@@ -1,4 +1,4 @@
-from .utils import get_frequency, merge, regex_tokenize, GPT4_PATTERN, print_progress
+from .utils import get_frequency, merge, regex_tokenize, GPT4_PATTERN, create_progress_bar
 import os
 import json
 import regex as re
@@ -41,6 +41,9 @@ class Tokenizer:
         # Clear previous timing data
         self.timing_data = []
         
+        # Create progress bar
+        progress_bar = create_progress_bar(total_merges, "Training BPE")
+        
         # Train BPE while maintaining split boundaries
         for i in range(total_merges):
             merge_start_time = time.time()
@@ -78,10 +81,12 @@ class Tokenizer:
                 'cumulative_time': time.time() - start_time
             })
             
-            # Progress indicator
-            print_progress(i + 1, total_merges, start_time, "Merge")
+            # Update progress bar
+            progress_bar.update(1)
+            progress_bar.set_postfix({'Latest merge time': f'{merge_time:.3f}s'})
         
-        print()  # New line after progress is complete
+        # Close progress bar
+        progress_bar.close()
         
         self.loaded = True
         self.token_to_id = {v: k for k, v in self.vocab.items()}

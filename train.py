@@ -4,7 +4,7 @@ import time
 
 # HYPERPARAMETERS
 DATASET = "assets/dataset.txt"
-VOCAB_SIZE = 50255
+VOCAB_SIZE = 50256
 REGEX_PATTERN = GPT4_PATTERN
 SAVED_TO = "homodeus"
 
