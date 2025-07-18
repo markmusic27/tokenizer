@@ -1,11 +1,13 @@
-from .utils import get_frequency, merge
+from .utils import get_frequency, merge, regex_tokenize, GPT4_PATTERN, print_progress
 import os
 import json
-import re
+import regex as re
+import time
+import csv
 
 
 class Tokenizer:
-    def __init__(self, vocab_size: int):
+    def __init__(self, vocab_size: int, pattern: str = GPT4_PATTERN):
         if (vocab_size <= 256):
             raise ValueError(f"vocab_size hyperparameter must be greater than 256. You inputted {vocab_size}")
         
@@ -18,76 +20,115 @@ class Tokenizer:
         # Create empty merge rules
         self.merge: dict[tuple[int, int], int] = {}
         
+        self.pattern = pattern
+        
+        # Training data for analysis
+        self.timing_data = []
+        
         self.loaded = False
-
         
-    
     def train(self, text: str) -> list[int]:
-        tokens = list(text.encode("utf-8"))
-        
-        for i in range(self.vocab_size - 256):
-            freq = get_frequency(tokens)
-            
-            if freq == None:
-                break
-            
-            highest_pair = None
-            highest_count = 0
-            
-            for pair in freq:
-                count = freq[pair]
-                
-                if highest_pair is None or count > highest_count:
-                    highest_pair = pair
-                    highest_count = count
+        # Use the actual text parameter and pattern
+        batches = regex_tokenize(text, self.pattern)
 
-            # Add this check:
-            if highest_pair is None:
+        # Convert each batch to bytes
+        byte_batches = [list(batch.encode("utf-8")) for batch in batches]
+        
+        # Training progress tracking
+        total_merges = self.vocab_size - 256
+        start_time = time.time()
+        
+        # Clear previous timing data
+        self.timing_data = []
+        
+        # Train BPE while maintaining split boundaries
+        for i in range(total_merges):
+            merge_start_time = time.time()
+            
+            # Collect frequency statistics across ALL splits
+            global_freq = {}
+            
+            for tokens in byte_batches:
+                freq = get_frequency(tokens)
+                if freq:
+                    for pair, count in freq.items():
+                        global_freq[pair] = global_freq.get(pair, 0) + count
+            
+            # Find the most frequent pair globally
+            if not global_freq:
                 break
                 
+            highest_pair = max(global_freq, key=global_freq.get)
             
+            # Apply merge to ALL splits (but only within each split)
             new_id = i + 256
-            merge(tokens, highest_pair, new_id)
+            
+            for tokens in byte_batches:
+                merge(tokens, highest_pair, new_id)
             
             # Update vocab and merge rules
             self.vocab[new_id] = self.vocab[highest_pair[0]] + self.vocab[highest_pair[1]]
             self.merge[highest_pair] = i
             
+            # Record timing data
+            merge_time = time.time() - merge_start_time
+            self.timing_data.append({
+                'merge_number': i + 1,
+                'time_seconds': merge_time,
+                'cumulative_time': time.time() - start_time
+            })
+            
+            # Progress indicator
+            print_progress(i + 1, total_merges, start_time, "Merge")
+        
+        print()  # New line after progress is complete
         
         self.loaded = True
         self.token_to_id = {v: k for k, v in self.vocab.items()}
         
-        return tokens
+        # Return flattened result (like encode() does)
+        result = []
+        for tokens in byte_batches:
+            result.extend(tokens)
+        return result
         
     def encode(self, text: str) -> list[int]:
         if not self.loaded:
             raise ValueError("The tokenizer has not yet been loaded (try loading or training)")
         
-        tokens = list(text.encode("utf-8"))
+        # Split text using regex pattern (same as in training)
+        batches = regex_tokenize(text, self.pattern)
         
-        # Try to merge as much as possible. Will break when no merges are left
-        while True:
+        all_tokens = []
+        
+        for batch in batches:
+            # Convert batch to bytes
+            tokens = list(batch.encode("utf-8"))
             
-            if len(tokens) < 2:
-                break
+            # Apply BPE merges to this batch
+            while True:
+                if len(tokens) < 2:
+                    break
+                
+                pairs = [(tokens[i], tokens[i+1]) for i in range(len(tokens) - 1)]
+                
+                # Create tuple of (pair, rank)
+                ranked = [(pair, self.merge[pair]) for pair in pairs if pair in self.merge]
+                
+                # No more mergeable pairs
+                if not ranked:
+                    break  
+                
+                best_pair, _ = min(ranked, key=lambda x: x[1])
+                
+                merged_bytes = self.vocab[best_pair[0]] + self.vocab[best_pair[1]]
+                new_id = self.token_to_id[merged_bytes]
+                
+                merge(tokens, best_pair, new_id)
             
-            pairs = [(tokens[i], tokens[i+1]) for i in range(len(tokens) - 1)]
-            
-            # Create tuple of (pair, rank)
-            ranked = [(pair, self.merge[pair]) for pair in pairs if pair in self.merge]
-            
-            # No more mergeable pairs
-            if not ranked:
-                break  
-            
-            best_pair, _ = min(ranked, key=lambda x: x[1])
-            
-            merged_bytes = self.vocab[best_pair[0]] + self.vocab[best_pair[1]]
-            new_id = self.token_to_id[merged_bytes]
-            
-            merge(tokens, best_pair, new_id)
-    
-        return tokens
+            all_tokens.extend(tokens)
+        
+        return all_tokens
         
     
     def decode(self, tokens: list[int]) -> str:
@@ -181,6 +222,16 @@ class Tokenizer:
         
         with open(vocab_path, "w", encoding="utf-8") as f:
             json.dump(vocab_str, f, ensure_ascii=False, indent=2)
+        
+        # Save timing data to CSV
+        if self.timing_data:
+            csv_filename = os.path.join(save_dir, "training_data.csv")
+            with open(csv_filename, 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = ['merge_number', 'time_seconds', 'cumulative_time']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(self.timing_data)
+            print(f"Training data saved to: {csv_filename}")
         
         return save_dir
     

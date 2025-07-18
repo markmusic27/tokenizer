@@ -1,77 +1,112 @@
 from src.tokenizer import Tokenizer
+from src.utils import regex_tokenize, GPT4_PATTERN
+import time
 
-data = r"""
-2026 FIFA World Cup qualification (CONCACAF)
+# HYPERPARAMETERS
+DATASET = "assets/dataset.txt"
+VOCAB_SIZE = 50255
+REGEX_PATTERN = GPT4_PATTERN
+SAVED_TO = "homodeus"
 
-Article
-Talk
-Read
-Edit
-View history
+# Load the dataset
+print("Loading dataset...")
+start_time = time.time()
+with open(DATASET, "r", encoding="utf-8") as f:
+    dataset = f.read()
 
-Tools
-Appearance hide
-Text
+load_time = time.time() - start_time
+print(f"Dataset loaded: {len(dataset)} characters ({load_time:.2f}s)")
 
-Small
+# Initialize tokenizer
+print("Initializing tokenizer...")
+init_start = time.time()
+encoder = Tokenizer(vocab_size=VOCAB_SIZE, pattern=REGEX_PATTERN)
+init_time = time.time() - init_start
+print(f"Tokenizer initialized ({init_time:.3f}s)")
 
-Standard
+# Train on the dataset
+print("Training tokenizer...")
+train_start = time.time()
+encoded_tokens = encoder.train(dataset)
+train_time = time.time() - train_start
 
-Large
-Width
+print(f"Training complete. Generated {len(encoded_tokens)} tokens ({train_time:.2f}s)")
+print(f"Vocabulary size: {len(encoder.vocab)}")
+print(f"Tokens per second: {len(encoded_tokens) / train_time:.0f}")
 
-Standard
-
-Wide
-Color (beta)
-
-Automatic
-
-Light
-
-Dark
-From Wikipedia, the free encyclopedia
-2026 FIFA World Cup qualification (CONCACAF)
-
-Tournament details
-Dates	22 March 2024 – November 2025
-Teams	32 (from 1 confederation)
-Tournament statistics
-Matches played	63
-Goals scored	220 (3.49 per match)
-Attendance	287,277 (4,560 per match)
-Top scorer(s)	Curaçao Gervane Kastaneer
-Saint Vincent and the Grenadines Oalex Anderson
-(5 goals)
-← 20222030 →
-All statistics correct as of 10 June 2025.
-CONCACAF Qualifiers
-FIFA World Cup
-CCCF–NAFC era
-1950195419581962
-CONCACAF era
-
-1966197019741978198219861990199419982002200620102014201820222026
-vte
-The North, Central American and Caribbean section of the 2026 FIFA World Cup qualification will act as the qualifiers for the 2026 FIFA World Cup, to be held in Canada, Mexico, and the United States, for national teams which are members of the Confederation of North, Central American and Caribbean Association Football (CONCACAF). Three direct slots and two inter-confederation play-off slots in the final tournament were available for CONCACAF teams.
-
-Format
-On 9 May 2017, the FIFA Council approved the slot allocation for the 2026 FIFA World Cup, which included six direct spots and two inter-confederation play-off spots for the CONCACAF region. However, in a change of format from previous World Cups, there would be no dedicated host country slot, with the slots of automatically qualifying host countries now taken from the quota of its confederation. If the tournament were to be co-hosted, the FIFA Council would decide which host countries would qualify automatically.[1] On 13 June 2018, three members of CONCACAF—Canada, Mexico and the United States—were selected as hosts for the 2026 World Cup by the 68th FIFA Congress.[2]
-
-On 14 February 2023, the FIFA Council awarded automatic berths for all three host countries, leaving three direct slots and two inter-confederation play-off slots to be decided through CONCACAF qualification.[3] On 28 February, CONCACAF announced the qualifying format for 2026 World Cup qualification.[4]
-
-First round: Four CONCACAF teams, ranked 29 to 32 based on the FIFA rankings of December 2023, were divided into two matchups, played on a two-legged home-and-away basis. The two winners advanced to the second round.
-Second round: Thirty teams, the two winners from the first round and CONCACAF teams ranked 1 to 28 based on the FIFA rankings of December 2023, were drawn into six groups of five teams. They played single round-robin matches (two home and two away), with group winners and runners-up advancing to the third round.
-Third round: The twelve teams advancing from the second round were drawn into three groups of four teams. They will play double round-robin home-and-away matches, with the three group winners qualifying for the World Cup. The two best-ranked runners-up will advance to the inter-confederation play-offs.
-Entrants
-As Canada, Mexico and the United States were awarded automatic berths as co-hosts, they did not enter qualifying. The remaining 32 FIFA-affiliated national teams from CONCACAF entered qualification. Based on the FIFA rankings of December 2023, the top 28 teams received a bye to the second round, while the lowest four teams entered the first round.[5]
-"""
-
-encoder = Tokenizer(vocab_size=270)
-
-encoder.load("saved_models/v_1")
-
-encoded = encoder.encode(data)
+# Test encoding and decoding
+print("\nTesting encoding/decoding...")
+test_start = time.time()
+test_text = "Hello world! This is a test."
+encoded = encoder.encode(test_text)
 decoded = encoder.decode(encoded)
+test_time = time.time() - test_start
 
-print(data == decoded)
+print(f"Original: '{test_text}'")
+print(f"Encoded: {encoded}")
+print(f"Decoded: '{decoded}'")
+print(f"Match: {test_text == decoded} ({test_time:.3f}s)")
+
+# Test with the full dataset
+print("\nTesting full dataset encoding/decoding...")
+dataset_test_start = time.time()
+
+# Encoding
+encode_start = time.time()
+dataset_encoded = encoder.encode(dataset)
+encode_time = time.time() - encode_start
+print(f"Dataset encoding completed ({encode_time:.2f}s)")
+
+# Decoding
+decode_start = time.time()
+dataset_decoded = encoder.decode(dataset_encoded)
+decode_time = time.time() - decode_start
+print(f"Dataset decoding completed ({decode_time:.2f}s)")
+
+# Compare lengths first (faster than full string comparison)
+print(f"Original dataset length: {len(dataset)}")
+print(f"Decoded dataset length: {len(dataset_decoded)}")
+print(f"Length match: {len(dataset) == len(dataset_decoded)}")
+
+# Full comparison (this might take a moment)
+comparison_start = time.time()
+full_match = dataset == dataset_decoded
+comparison_time = time.time() - comparison_start
+print(f"Full dataset match: {full_match} ({comparison_time:.2f}s)")
+
+dataset_test_time = time.time() - dataset_test_start
+
+if not full_match:
+    # Find where they differ
+    for i, (orig, dec) in enumerate(zip(dataset, dataset_decoded)):
+        if orig != dec:
+            print(f"First difference at position {i}: '{orig}' vs '{dec}'")
+            break
+else:
+    print("✅ Success! Encoding and decoding preserves the original text perfectly.")
+
+print(f"Total dataset testing time: {dataset_test_time:.2f}s")
+
+# Save the trained model
+print("\nSaving model...")
+save_start = time.time()
+save_path = encoder.save(SAVED_TO)
+save_time = time.time() - save_start
+print(f"Model saved to: {save_path} ({save_time:.2f}s)")
+
+# Summary
+total_time = time.time() - start_time
+print(f"\n{'='*50}")
+print(f"TRAINING SUMMARY")
+print(f"{'='*50}")
+print(f"Dataset size: {len(dataset):,} characters")
+print(f"Generated tokens: {len(encoded_tokens):,}")
+print(f"Vocabulary size: {len(encoder.vocab)}")
+print(f"Compression ratio: {len(dataset) / len(encoded_tokens):.2f}x")
+print(f"")
+print(f"Timing breakdown:")
+print(f"  Loading dataset: {load_time:.2f}s")
+print(f"  Training BPE: {train_time:.2f}s")
+print(f"  Testing: {dataset_test_time:.2f}s")
+print(f"  Saving model: {save_time:.2f}s")
+print(f"  Total time: {total_time:.2f}s")
