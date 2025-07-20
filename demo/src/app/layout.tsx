@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "Visual Tokenizer",
     description:
       "Minimal implementation of Byte Pair Encoding algorithm for LLM tokenization.",
-    url: "https://digit-recognition-nn.vercel.app",
+    url: "https://visual-tokenizer.vercel.app",
     siteName: "Visual Tokenizer",
     images: [
       {
