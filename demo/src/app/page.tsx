@@ -1,3 +1,9 @@
+import { NavBar } from "./components/NavBar";
+
 export default function HomePage() {
-  return <div>0123</div>;
+  return (
+    <div className="h-[100dvh] w-[100dvw]">
+      <NavBar />
+    </div>
+  );
 }

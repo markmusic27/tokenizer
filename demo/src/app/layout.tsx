@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   description:
     "Minimal implementation of Byte Pair Encoding algorithm for LLM tokenization.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+  themeColor: "#F8F8F8",
   openGraph: {
     title: "Visual Tokenizer",
     description:
@@ -65,7 +66,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${helvetica.variable} ${sf.variable}`}>
-      <body className="bg-black text-white">{children}</body>
+      <body className="bg-[#F8F8F8] text-black">{children}</body>
     </html>
   );
 }

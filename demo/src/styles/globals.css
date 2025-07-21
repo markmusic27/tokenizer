@@ -6,7 +6,7 @@
 }
 
 @layer utilities {
-  .font-louize {
+  .font-helvetica {
     font-family: var(--font-helvetica);
   }
   
