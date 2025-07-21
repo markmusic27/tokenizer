@@ -21,7 +21,7 @@ export const NavBar = () => {
 
   return (
     <div
-      className="sticky top-[20px] z-50 mt-[20px] flex max-w-[900px] flex-row items-center justify-between rounded-[20px] bg-[#DEDEDE4D] py-[6px] pr-[6px] pl-[15px] backdrop-blur-[24px]"
+      className="sticky top-[20px] z-50 flex max-w-[900px] flex-row items-center justify-between rounded-[20px] bg-[#DEDEDE4D] py-[6px] pr-[6px] pl-[15px] backdrop-blur-[24px]"
       style={{
         marginLeft: shouldCenter ? "auto" : "15px",
         marginRight: shouldCenter ? "auto" : "15px",
