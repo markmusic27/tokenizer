@@ -1,3 +1,4 @@
+import { Content } from "./components/Content";
 import { Gradient } from "./components/Gradient";
 import { NavBar } from "./components/NavBar";
 
@@ -6,6 +7,7 @@ export default function HomePage() {
     <div className="relative h-screen min-h-[800px] w-full">
       <NavBar />
       <Gradient />
+      <Content />
     </div>
   );
 }
