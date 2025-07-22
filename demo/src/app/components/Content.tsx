@@ -6,6 +6,7 @@ import { BaseBox } from "./BaseBox";
 import WhitespaceToggle from "./WhitespaceToggle";
 import HighlightedSegments from "./HighlightedSegments";
 import TokenizedSegments from "./TokenizedSegments";
+import Indicator from "./Indicator";
 
 export const Content = () => {
   const [windowWidth, setWindowWidth] = useState<number | undefined>(undefined);
@@ -39,11 +40,12 @@ export const Content = () => {
           WebkitTextStroke: "0.6px #636363",
         }}
       >
-        A minimal Byte Pair Encoding tokenizer for LLMs
+        Minimal implementation of BPE tokenizer for LLMs
       </p>
       <div className="h-[45px] w-full"></div>
-      <div className="flex h-[300px] w-full gap-[15px]">
-        <div className="flex w-9/20 flex-col gap-[15px]">
+      <div className="flex w-full items-stretch gap-[15px]">
+        <div className="flex w-17/40 flex-col gap-[15px]">
+          {/*  input */}
           <InputBox />
 
           {/*  show whitespace button */}
@@ -53,9 +55,18 @@ export const Content = () => {
             }}
           />
         </div>
-        <div className="flex w-9/20 flex-col gap-[15px]">
+        <div className="flex w-23/40 flex-col gap-[15px]">
+          {/* indicators */}
+          <div className="flex flex-row gap-[15px]">
+            <Indicator title="Token Count" data="14" className="w-2/5" />
+            <Indicator
+              title="Compression Ratio"
+              data="127%"
+              className="w-3/5"
+            />
+          </div>
           {/* highlighted  */}
-          <BaseBox className="flex flex-row">
+          <BaseBox className="flex h-auto min-h-[160] flex-col">
             <HighlightedSegments
               showWhitespace={false}
               texts={[
@@ -77,17 +88,14 @@ export const Content = () => {
           </BaseBox>
 
           {/*  tokenized */}
-          <BaseBox className="flex flex-row">
+          <BaseBox className="flex h-auto min-h-[160] flex-col">
             <TokenizedSegments
-              tokens={[
-                1023, 2045, 3567, 4789, 5123, 6789, 7890, 8912, 9345, 10234,
-                12345, 14567, 16789, 18901, 20345, 23456, 26789, 29876, 31234,
-                34567,
-              ]}
+              tokens={[1023, 2045, 3567, 4789]}
               onHover={(index) => {
                 console.log("hover", index);
               }}
             />
+            <div className="flex" />
           </BaseBox>
 
           <div></div>
