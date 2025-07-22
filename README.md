@@ -75,4 +75,11 @@ I thought this dataset would provide a relatively complete picture of the Englis
 ### Time to train
 Something I found interesting was the time it took process each merge. As more pairs were minted into new tokens and the process was repeated, the time it took to complete one cycle became shorter. In fact, the merges (generating frequencies, minting token, and replacing it in the text) seemed to take exponentially less time. I recorded the time that it took my MacBook to process each merge in `saved_models/v_corpus/training_data.csv`. Here's the data:
 
+![Training Time Graph](https://github.com/markmusic27/tokenizer/blob/main/docs/graph.png?raw=true)
 
+The data seems to represent a logarithmic relationship where the time to process each merge asymptotically tends to $\approx 0.23$. This makes sense, in theory, since when the training process first begins, the workable dataset length is the highest (more content to make frequency table from). Additionally, the most common character pairs are likely very common such that they represent a significant number of merges. After a certain theshold, however, it seems that two things produce very little change in time from merge to merge:
+
+1. The workable dataset has reached a low enough length such that generating a frequency table takes a trivial amount of time.
+2. At first, the frequency graph of all words has very little variance (some pairs, like " t" likely dominate the distribution). However, once the "common" words are merged (at around index 20,000), the frequency distribution has greater variance (where no one pair dominates the rest). Hence, merging one pair takes around the same time as it takes to merge the next or the one before.
+
+Note that due to Regex splitting, two words cannot be merged together. Hence, frequent phrases that you'd image would be merged (eg. "due to the fact"). Hence, we reach a constant time-complexity.
