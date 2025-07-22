@@ -1,7 +1,14 @@
-export const GradientVideo = ({ className }: { className?: string }) => {
+export const GradientVideo = ({
+  className,
+  videoRef,
+}: {
+  className?: string;
+  videoRef?: React.RefObject<HTMLVideoElement | null>;
+}) => {
   return (
     <div className={`relative ${className ?? ""}`}>
       <video
+        ref={videoRef}
         src="/content/gradient.mp4"
         autoPlay
         muted
