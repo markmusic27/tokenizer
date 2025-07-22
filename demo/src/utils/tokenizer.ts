@@ -9,7 +9,7 @@ export class Tokenizer {
   private loaded: boolean = false;
 
   constructor(
-    pattern: string = "'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+",
+    pattern: string = "'s|'t|'re|'ve|'m|'ll|'d| ?\\p{L}+| ?\\p{N}+| ?[^\\s\\p{L}\\p{N}]+|\\s+(?!\\S)|\\s+",
     flags: string = "gu",
   ) {
     // Default pattern is similar to GPT-4's
@@ -81,17 +81,14 @@ export class Tokenizer {
     return allTokens;
   }
 
-  decode(tokens: number[]): string {
+  decode(tokens: number[]): string[] {
     if (!this.loaded) throw new Error("Tokenizer not loaded");
-    // Convert each token id to its byte array, then concatenate
-    const bytes: number[] = [];
-    for (const token of tokens) {
+    // For each token, decode its byte array to a string
+    return tokens.map((token) => {
       const arr = this.vocab.get(token);
       if (!arr) throw new Error(`No vocab entry for token id: ${token}`);
-      bytes.push(...arr);
-    }
-    // Decode the concatenated bytes back to string
-    return new TextDecoder().decode(new Uint8Array(bytes));
+      return new TextDecoder().decode(arr);
+    });
   }
 
   // Helper: merge all occurrences of a pair in a token array

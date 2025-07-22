@@ -4,19 +4,57 @@ import WhitespaceToggle from "./WhitespaceToggle";
 import HighlightedSegments from "./HighlightedSegments";
 import TokenizedSegments from "./TokenizedSegments";
 import Indicator from "./Indicator";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Tokenizer } from "@/utils/tokenizer";
 
 const TokenizerContent = () => {
-  const [encoded, setEncoded] = useState([]);
-  const [decoded, setDecoded] = useState([]);
+  const [encoded, setEncoded] = useState<number[]>([]);
+  const [decoded, setDecoded] = useState<string[]>([]);
   const [highlighted, setHighlighted] = useState<number | null>(null);
   const [showWhitespace, setShowWhitespace] = useState(false);
+  const [tokenizer, setTokenizer] = useState<Tokenizer | null>(null);
+  const [inputText, setInputText] = useState<string>(
+    "The quick brown fox jumps over the lazy dog!",
+  );
+
+  // Constants for compression calculation
+  const VOCAB_SIZE = 50118;
+  const BITS_PER_TOKEN = Math.ceil(Math.log2(VOCAB_SIZE));
+
+  useEffect(() => {
+    const loadTokenizer = async () => {
+      const t = new Tokenizer();
+      await t.load("/model/");
+      setTokenizer(t);
+    };
+    loadTokenizer();
+  }, []);
+
+  useEffect(() => {
+    if (tokenizer) {
+      handleTextChange(inputText);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokenizer]);
+
+  const handleTextChange = (text: string) => {
+    setInputText(text);
+    if (!tokenizer) return;
+    try {
+      const tokens = tokenizer.encode(text);
+      setEncoded(tokens);
+      setDecoded(tokenizer.decode(tokens));
+    } catch (e) {
+      setEncoded([]);
+      setDecoded([]);
+    }
+  };
 
   return (
     <div className="flex w-full flex-col items-stretch gap-[15px] md:flex-row">
       <div className="flex flex-col gap-[15px] md:w-17/40">
         {/*  input */}
-        <InputBox />
+        <InputBox onChangeText={handleTextChange} value={inputText} />
 
         {/*  show whitespace button */}
         <WhitespaceToggle
@@ -28,26 +66,39 @@ const TokenizerContent = () => {
       <div className="flex flex-col gap-[15px] md:w-23/40">
         {/* indicators */}
         <div className="flex flex-row gap-[15px]">
-          <Indicator title="Token Count" data="14" className="w-2/5" />
-          <Indicator title="Compression Ratio" data="127%" className="w-3/5" />
+          <Indicator
+            title="Token Count"
+            data={encoded.length.toString()}
+            className="w-2/5"
+          />
+          {/* Compression Ratio Calculation */}
+          {(() => {
+            // Bits in tokens
+            const tokenBits = encoded.length * BITS_PER_TOKEN;
+            // Bits in UTF-8
+            const utf8Bytes = new TextEncoder().encode(inputText).length;
+            const utf8Bits = utf8Bytes * 8;
+            // Compression ratio: (utf8Bits / tokenBits)
+            let ratioStr = "-";
+            if (tokenBits > 0) {
+              const ratio = utf8Bits / tokenBits;
+              ratioStr = `${ratio.toFixed(2)}x`;
+            }
+            return (
+              <Indicator
+                title="Compression Ratio"
+                data={ratioStr}
+                className="w-3/5"
+              />
+            );
+          })()}
         </div>
         {/* highlighted  */}
         <BaseBox className="flex h-auto min-h-[160] flex-col">
           <HighlightedSegments
             showWhitespace={showWhitespace}
             hoveredIndex={highlighted}
-            texts={[
-              "The ",
-              "quick ",
-              "brown ",
-              "fox ",
-              "jumps ",
-              "over ",
-              "13 ",
-              "lazy ",
-              "dogs-twice",
-              "!",
-            ]}
+            texts={decoded}
             onHover={(index) => {
               setHighlighted(index === -1 ? null : index);
             }}
@@ -57,7 +108,7 @@ const TokenizerContent = () => {
         {/*  tokenized */}
         <BaseBox className="flex h-auto min-h-[160] flex-col">
           <TokenizedSegments
-            tokens={[1023, 2045, 3567, 4789]}
+            tokens={encoded}
             onHover={(index) => {
               setHighlighted(index === -1 ? null : index);
             }}
