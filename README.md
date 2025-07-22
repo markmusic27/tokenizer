@@ -48,8 +48,31 @@ The issue is that we are limited by how many of these dot-products we can comput
 
 BPEs offer an in-between where tokens are neither characters or words. BPEs start with a base of the 256 character vocabulary from UTF-8 and procedurally mint new tokens by identifying which pair of characters occurs the most in its training set. It repeats this process until a desired vocabulary size is reached.
 
-In my training data, the most frequent pair was " t". This makes sense. Think of the number of words that begin with "t" and how often they're used.
+In my training data, the most frequent pair was " t". This makes sense. Think of the number of words that begin with "t" and how often they're used. In fact, try `cmd+f` and type " t" on this README; you'll find that pair occurs 120 times.
 
 There is one important thing that I won't cover here which is Regex splitting of words. Andrej Karpathy covers this, and pretty much everything else you need to know about tokenization, in his [video on the topic](https://www.youtube.com/watch?v=zduSFxRajkE&t=4s). That's the resource I used to learn all of this.
 
 ## My implementation
+
+My implementation of the BPE algorithm defines a class with five important methods:
+
+1. `train`: generates a vocabulary with a predeterimed size given a training text (passed as a string)
+2. `encode`: generates a list of tokens for a given text
+3. `decode`: generates a text from a given list of tokens
+4. `load`: loads a vocabulary from a merges.txt and a vocab.json file
+5. `save`: saves the vocabulary and merges to merges.txt and vocab.json files given an output path
+
+Note that either `train` or `load` must be run before you can encode or decode. I provided an example model (found in `saved_models/v_corpus`) that was trained on four documents comprised of 7,562,836 characters. This is the model that is running on the demo website. The training resulted in a vocabulary size of 50,256 tokens.
+
+### Training
+
+For my dataset, I chose to train the tokenizer on [The Feynmann Lectures](https://www.feynmanlectures.caltech.edu/), [Homo Deus by Yuval Noah Harari](https://www.ynharari.com/book/homo-deus/), [Little Women by Luisa May Alcott](https://www.gutenberg.org/ebooks/514), and [The Love Hypothesis by Ali Hazelwood](https://alihazelwood.com/the-love-hypothesis/).
+
+I thought this dataset would provide a relatively complete picture of the English language including STEM / academic writing, classic literature, and more coloquial text.
+
+**Things this tokenizer was not trained on:** Code of any kind (besides maybe some LATEX), non-english languages, specialized jargon from other fields, Social Media vernacular (brainrot), emojis and other unicode symbols, and unique dialects.
+
+### Time to train
+Something I found interesting was the time it took process each merge. As more pairs were minted into new tokens and the process was repeated, the time it took to complete one cycle became shorter. In fact, the merges (generating frequencies, minting token, and replacing it in the text) seemed to take exponentially less time. I recorded the time that it took my MacBook to process each merge in `saved_models/v_corpus/training_data.csv`. Here's the data:
+
+
