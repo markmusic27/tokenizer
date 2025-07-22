@@ -7,6 +7,7 @@ import WhitespaceToggle from "./WhitespaceToggle";
 import HighlightedSegments from "./HighlightedSegments";
 import TokenizedSegments from "./TokenizedSegments";
 import Indicator from "./Indicator";
+import Footer from "./Footer";
 
 export const Content = () => {
   const [windowWidth, setWindowWidth] = useState<number | undefined>(undefined);
@@ -42,9 +43,9 @@ export const Content = () => {
       >
         Minimal implementation of BPE tokenizer for LLMs
       </p>
-      <div className="h-[45px] w-full"></div>
-      <div className="flex w-full items-stretch gap-[15px]">
-        <div className="flex w-17/40 flex-col gap-[15px]">
+      <div className="h-[45px] w-full" />
+      <div className="flex w-full flex-col items-stretch gap-[15px] md:flex-row">
+        <div className="flex flex-col gap-[15px] md:w-17/40">
           {/*  input */}
           <InputBox />
 
@@ -55,7 +56,7 @@ export const Content = () => {
             }}
           />
         </div>
-        <div className="flex w-23/40 flex-col gap-[15px]">
+        <div className="flex flex-col gap-[15px] md:w-23/40">
           {/* indicators */}
           <div className="flex flex-row gap-[15px]">
             <Indicator title="Token Count" data="14" className="w-2/5" />
@@ -97,10 +98,11 @@ export const Content = () => {
             />
             <div className="flex" />
           </BaseBox>
-
-          <div></div>
         </div>
       </div>
+      <div className="h-[60px] w-full" />
+      <Footer />
+      <div className="h-[100px] w-full" />
     </div>
   );
 };
