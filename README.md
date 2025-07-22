@@ -9,7 +9,7 @@
   </p>
 </p>
 
-The BPE was written in Python (`src/tokenizer.py`) and implements GPT-4's Regex splitting technique. The tokenizer was trained on four documents with a 7,562,836 characters (see `/dataset`), and resulted in a vocabulary size of 50,256 tokens (`saved_models/v_corpus`). The [demo](https://visual-tokenizer.vercel.app/) was built using `create-t3-app` with React, Typescript, and Tailwind (see `/demo`).
+The BPE was written in Python (`src/tokenizer.py`) and implements GPT-4's Regex splitting technique. The tokenizer was trained on four documents with a combined 7,562,836 characters (see `/dataset`), and resulted in a vocabulary size of 50,256 tokens (`saved_models/v_corpus`). The [demo](https://visual-tokenizer.vercel.app/) was built using `create-t3-app` with React, Typescript, and Tailwind (see `/demo`).
 
 
 ![Visual Tokenizer](https://github.com/markmusic27/tokenizer/blob/main/docs/thumbnail_gh.png?raw=true)
