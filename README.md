@@ -12,6 +12,8 @@
 <br />
 The BPE is implemented in Python (`src/tokenizer.py`) and implements GPT-4's Regex splitting technique. The tokenizer was trained on 4 documents with a 7,562,836 characters (see `/dataset`), and resulted a vocabulary size of 50,256 tokens (`saved_models/v_corpus`). The [demo](https://visual-tokenizer.vercel.app/) was built using `create-t3` w/ React/TS/Tailwind (see `/demo`)
 
+<br />
+
 ![Visual Tokenizer](https://github.com/markmusic27/tokenizer/blob/main/docs/thumbnail_gh.png?raw=true)
 
 _Note: UX Inspiration from [diabrowser.com](https://diabrowser.com) and [tiktokenizer.vercel.app](https://tiktokenizer.vercel.app/)_
