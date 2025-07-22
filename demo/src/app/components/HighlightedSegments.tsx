@@ -2,19 +2,29 @@ import React, { useState } from "react";
 
 interface HighlightedSegmentsProps {
   texts: string[];
-  onHover: (index: number) => void;
+  onHover: (index: number | null) => void;
   showWhitespace: boolean;
+  hoveredIndex?: number | null;
 }
 
 const HighlightedSegments: React.FC<HighlightedSegmentsProps> = ({
   texts,
   onHover,
   showWhitespace,
+  hoveredIndex: hoveredIndexProp,
 }) => {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [internalHoveredIndex, setInternalHoveredIndex] = useState<
+    number | null
+  >(null);
+
+  // Use controlled hoveredIndex if provided, otherwise use internal state
+  const hoveredIndex =
+    hoveredIndexProp !== undefined ? hoveredIndexProp : internalHoveredIndex;
 
   const handleHover = (index: number | null) => {
-    setHoveredIndex(index);
+    if (hoveredIndexProp === undefined) {
+      setInternalHoveredIndex(index);
+    }
     onHover(index ?? -1);
   };
 
@@ -44,12 +54,16 @@ const HighlightedSegments: React.FC<HighlightedSegmentsProps> = ({
     return colors[index % colors.length];
   };
 
+  const containsWhitespace = (text: string) => {
+    return text.includes(" ");
+  };
+
   return (
     <div className="flex flex-row flex-wrap">
       {texts.map((text, idx) => (
         <span
           key={idx}
-          className={`font-mono text-[16px] whitespace-pre transition-all duration-200 ${hoveredIndex === null || hoveredIndex === idx ? generateColorClass(idx) : ""}`}
+          className={`font-mono ${(showWhitespace || hoveredIndex === idx) && containsWhitespace(text) ? "pl-[0.2px]" : ""} text-[16px] whitespace-pre transition-colors duration-200 ${hoveredIndex === null || hoveredIndex === idx ? generateColorClass(idx) : ""}`}
           onMouseEnter={() => handleHover(idx)}
           onMouseLeave={() => handleHover(null)}
         >

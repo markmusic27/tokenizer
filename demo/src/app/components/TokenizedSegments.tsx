@@ -2,18 +2,28 @@ import React, { useState } from "react";
 
 interface TokenizedSegmentsProps {
   tokens: number[];
-  onHover: (index: number) => void;
+  onHover: (index: number | null) => void;
+  hoveredIndex?: number | null;
 }
 
 const TokenizedSegments: React.FC<TokenizedSegmentsProps> = ({
   tokens,
   onHover,
+  hoveredIndex: hoveredIndexProp,
 }) => {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [internalHoveredIndex, setInternalHoveredIndex] = useState<
+    number | null
+  >(null);
+
+  // Use controlled hoveredIndex if provided, otherwise use internal state
+  const hoveredIndex =
+    hoveredIndexProp !== undefined ? hoveredIndexProp : internalHoveredIndex;
 
   const handleHover = (index: number | null) => {
-    setHoveredIndex(index);
-    onHover(index ?? -1);
+    if (hoveredIndexProp === undefined) {
+      setInternalHoveredIndex(index);
+    }
+    onHover(index);
   };
 
   // Function to generate a color class for each text
