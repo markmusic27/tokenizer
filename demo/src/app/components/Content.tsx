@@ -1,9 +1,10 @@
 "use client";
 
-import { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import InputBox from "./InputBox";
 import { BaseBox } from "./BaseBox";
 import WhitespaceToggle from "./WhitespaceToggle";
+import HighlightedSegments from "./HighlightedSegments";
 
 export const Content = () => {
   const [windowWidth, setWindowWidth] = useState<number | undefined>(undefined);
@@ -53,7 +54,26 @@ export const Content = () => {
         </div>
         <div className="flex w-9/20 flex-col gap-[15px]">
           {/* highlighted  */}
-          <div></div>
+          <BaseBox className="flex flex-row">
+            <HighlightedSegments
+              showWhitespace={false}
+              texts={[
+                "The ",
+                "quick ",
+                "brown ",
+                "fox ",
+                "jumps ",
+                "over ",
+                "13 ",
+                "lazy ",
+                "dogs-twice",
+                "!",
+              ]}
+              onHover={(index) => {
+                console.log("hover", index);
+              }}
+            />
+          </BaseBox>
 
           {/*  tokenized */}
           <div></div>
