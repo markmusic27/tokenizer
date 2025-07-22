@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
 import { GradientVideo } from "./GradientVideo";
 
 export const Gradient = () => {

@@ -2,21 +2,21 @@
 // Loads merges.txt and vocab.json from /public/model/ and encodes text using BPE
 
 export class Tokenizer {
-  private vocab: Map<number, Uint8Array> = new Map();
-  private tokenToId: Map<string, number> = new Map();
-  private merge: Map<string, number> = new Map();
+  private vocab = new Map<number, Uint8Array>();
+  private tokenToId = new Map<string, number>();
+  private merge = new Map<string, number>();
   private pattern: RegExp;
-  private loaded: boolean = false;
+  private loaded = false;
 
   constructor(
-    pattern: string = "'s|'t|'re|'ve|'m|'ll|'d| ?\\p{L}+| ?\\p{N}+| ?[^\\s\\p{L}\\p{N}]+|\\s+(?!\\S)|\\s+",
-    flags: string = "gu",
+    pattern = "'s|'t|'re|'ve|'m|'ll|'d| ?\\p{L}+| ?\\p{N}+| ?[^\\s\\p{L}\\p{N}]+|\\s+(?!\\S)|\\s+",
+    flags = "gu",
   ) {
     // Default pattern is similar to GPT-4's
     this.pattern = new RegExp(pattern, flags);
   }
 
-  async load(modelDir: string = "/model/") {
+  async load(modelDir = "/model/") {
     // Loads merges.txt and vocab.json from public/model/
     const mergesUrl = modelDir + "merges.txt";
     const vocabUrl = modelDir + "vocab.json";
@@ -38,12 +38,12 @@ export class Tokenizer {
     // Load vocab.json
     const vocabResp = await fetch(vocabUrl);
     if (!vocabResp.ok) throw new Error("Could not load vocab.json");
-    const vocabData = await vocabResp.json();
+    const vocabData = (await vocabResp.json()) as Record<string, number>;
     for (const [key, value] of Object.entries(vocabData)) {
       // key is string, value is number
       const bytes = new TextEncoder().encode(key);
-      this.vocab.set(value as number, bytes);
-      this.tokenToId.set(this.uint8ToString(bytes), value as number);
+      this.vocab.set(value, bytes);
+      this.tokenToId.set(this.uint8ToString(bytes), value);
     }
     this.loaded = true;
   }
@@ -52,7 +52,7 @@ export class Tokenizer {
     if (!this.loaded) throw new Error("Tokenizer not loaded");
     // Split text using regex pattern
     const batches = Array.from(text.matchAll(this.pattern), (m) => m[0]);
-    let allTokens: number[] = [];
+    const allTokens: number[] = [];
     for (const batch of batches) {
       let tokens = Array.from(new TextEncoder().encode(batch));
       // BPE merge loop
@@ -138,7 +138,7 @@ export class Tokenizer {
 
 // Test/demo usage (only runs if executed directly, not when imported)
 if (typeof window !== "undefined") {
-  (async () => {
+  void (async () => {
     const tokenizer = new Tokenizer();
     try {
       await tokenizer.load("/model/");

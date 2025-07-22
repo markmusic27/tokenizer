@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export const GradientVideo = ({ className }: { className?: string }) => {
   return (
     <div className={`relative ${className ?? ""}`}>

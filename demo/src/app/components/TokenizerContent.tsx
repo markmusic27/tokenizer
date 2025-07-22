@@ -27,7 +27,7 @@ const TokenizerContent = () => {
       await t.load("/model/");
       setTokenizer(t);
     };
-    loadTokenizer();
+    void loadTokenizer();
   }, []);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const TokenizerContent = () => {
       const tokens = tokenizer.encode(text);
       setEncoded(tokens);
       setDecoded(tokenizer.decode(tokens));
-    } catch (e) {
+    } catch {
       setEncoded([]);
       setDecoded([]);
     }
