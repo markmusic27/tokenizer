@@ -3,6 +3,7 @@
   <p align="center">
   ✶ A minimal implementation of the Byte Pair Encoding<br/>(BPE) algorithm for LLM tokenization ✶
     <br />
+    <br />
     <a href="https://visual-tokenizer.vercel.app/">Open Demo »</a>
     <br />
   </p>
