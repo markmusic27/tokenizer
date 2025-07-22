@@ -8,9 +8,11 @@
   </p>
 </p>
 
-The BPE is implemented in Python (`src/tokenizer.py`) and implements GPT-4's Regex splitting technique. The tokenizer was trained on 4 documents with a 7,562,836 characters (see `dataset/`), and resulted a vocabulary size of 50,256 tokens (`saved_models/v_corpus`).
+The BPE is implemented in Python (`src/tokenizer.py`) and implements GPT-4's Regex splitting technique. The tokenizer was trained on 4 documents with a 7,562,836 characters (see `/dataset`), and resulted a vocabulary size of 50,256 tokens (`saved_models/v_corpus`). The demo was built using `create-t3` w/ React/TS/Tailwind (see `/demo`)
 
-![Demo of Ethics in Psychiatric Genomics](https://github.com/markmusic27/ethical-genomics/blob/main/public/images/readme.png?raw=true)
+![Visual Tokenizer](https://github.com/markmusic27/tokenizer/blob/main/docs/thumbnail_gh.png?raw=true)
+
+_Note: UX Inspiration from [diabrowser.com](https://diabrowser.com) and [tiktokenizer.vercel.app](https://tiktokenizer.vercel.app/)_
 
 Byte Pair Encoding is the backbone of most modern LLM tokenization. It was popularized by the GPT-2 paper ["Language Models are Unsupervised Multitask Learners"](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf), where OpenAI used it, in combination with Regex splitting, to create GPT-2's 50,257 token vocabulary.
 
