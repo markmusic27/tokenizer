@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
+import InputBox from "./InputBox";
+import { BaseBox } from "./BaseBox";
+import WhitespaceToggle from "./WhitespaceToggle";
 
 export const Content = () => {
   const [windowWidth, setWindowWidth] = useState<number | undefined>(undefined);
@@ -17,7 +20,7 @@ export const Content = () => {
 
   return (
     <div
-      className={`absolute top-[16vh] left-1/2 z-1 w-full max-w-[880px] -translate-x-1/2 transform text-black ${paddingClass}`}
+      className={`absolute top-[16vh] left-1/2 z-10 w-full max-w-[880px] -translate-x-1/2 transform text-black ${paddingClass}`}
     >
       <p
         className="font-helvetica text-center text-[32px] font-[300] md:text-[48px]"
@@ -39,18 +42,14 @@ export const Content = () => {
       <div className="h-[45px] w-full"></div>
       <div className="flex h-[300px] w-full gap-[15px]">
         <div className="flex w-9/20 flex-col gap-[15px]">
-          {/* input  */}
-          <textarea
-            className="min-h-[300px] resize-none rounded-[14px] border-[1px] border-[#000000]/[0.08] bg-[#FFFFFF]/[0.5] px-[14px] py-[14px] text-[14px] text-black transition-all duration-300 hover:scale-[1.005] focus:outline-none"
-            name=""
-            id=""
-            onChange={(e) => {
-              console.log(e);
-            }}
-          ></textarea>
+          <InputBox />
 
           {/*  show whitespace button */}
-          <div></div>
+          <WhitespaceToggle
+            onClick={(active) => {
+              console.log("toggle whitespace", active);
+            }}
+          />
         </div>
         <div className="flex w-9/20 flex-col gap-[15px]">
           {/* highlighted  */}
