@@ -6,6 +6,7 @@
     <br />
     <a href="https://visual-tokenizer.vercel.app/">Open Demo »</a>
     <br />
+    <br />
   </p>
 </p>
 
