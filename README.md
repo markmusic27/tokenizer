@@ -1,14 +1,15 @@
 <p align="center">
   <h1 align="center"><b>Byte Pair Encoding Tokenizer</b></h1>
   <p align="center">
-  ✶ A minimal implementation of the Byte Pair Encoding (BPE) algorithm for LLM tokenization ✶
+  ✶ A minimal implementation of the Byte Pair Encoding<br/>(BPE) algorithm for LLM tokenization ✶
     <br />
     <a href="https://visual-tokenizer.vercel.app/">Open Demo »</a>
     <br />
   </p>
 </p>
 
-The BPE is implemented in Python (`src/tokenizer.py`) and implements GPT-4's Regex splitting technique. The tokenizer was trained on 4 documents with a 7,562,836 characters (see `/dataset`), and resulted a vocabulary size of 50,256 tokens (`saved_models/v_corpus`). The demo was built using `create-t3` w/ React/TS/Tailwind (see `/demo`)
+<br />
+The BPE is implemented in Python (`src/tokenizer.py`) and implements GPT-4's Regex splitting technique. The tokenizer was trained on 4 documents with a 7,562,836 characters (see `/dataset`), and resulted a vocabulary size of 50,256 tokens (`saved_models/v_corpus`). The [demo](https://visual-tokenizer.vercel.app/) was built using `create-t3` w/ React/TS/Tailwind (see `/demo`)
 
 ![Visual Tokenizer](https://github.com/markmusic27/tokenizer/blob/main/docs/thumbnail_gh.png?raw=true)
 
