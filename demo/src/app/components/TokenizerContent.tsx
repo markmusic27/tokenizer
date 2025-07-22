@@ -14,7 +14,7 @@ const TokenizerContent = () => {
   const [showWhitespace, setShowWhitespace] = useState(false);
   const [tokenizer, setTokenizer] = useState<Tokenizer | null>(null);
   const [inputText, setInputText] = useState<string>(
-    "The quick brown fox jumps over the lazy dog!",
+    "Type here... The quick brown fox jumps over the lazy dog, or something.",
   );
 
   // Constants for compression calculation
