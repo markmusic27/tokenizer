@@ -13,7 +13,7 @@ print("Loading dataset...")
 start_time = time.time()
 dataset = ""
 for filename in DATASET:
-    filepath = f"assets/{filename}"
+    filepath = f"dataset/{filename}"
     print(f"Loading {filename}...")
     with open(filepath, "r", encoding="utf-8") as f:
         file_content = f.read()

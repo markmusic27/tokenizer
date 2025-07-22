@@ -8,7 +8,7 @@
   </p>
 </p>
 
-The BPE is implemented in Python (`src/tokenizer.py`) and implements GPT-4's Regex splitting technique (from `tiktoken` library). It was trained on 4 documents with a total of 7,562,836 characters (see `assets/`), and resulted in a tokenizer with a vocabulary of 50,256 tokens (`saved_models/v_corpus`)
+The BPE is implemented in Python (`src/tokenizer.py`) and implements GPT-4's Regex splitting technique. The tokenizer was trained on 4 documents with a 7,562,836 characters (see `dataset/`), and resulted a vocabulary size of 50,256 tokens (`saved_models/v_corpus`).
 
 ![Demo of Ethics in Psychiatric Genomics](https://github.com/markmusic27/ethical-genomics/blob/main/public/images/readme.png?raw=true)
 
