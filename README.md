@@ -8,9 +8,12 @@
   </p>
 </p>
 
-Byte Pair Encoding is the backbone of most modern LLM tokenization. It was popularized by the GPT-2 paper "Language Models are Unsupervised Multitask Learners", where OpenAI used it, in combination with Regex splitting, to create GPT-2's 50,257 token vocabulary.
+The BPE is implemented in Python (`src/tokenizer.py`) and implements GPT-4's Regex splitting technique (from `tiktoken` library). It was trained on 4 documents with a total of 7,562,836 characters (see `assets/`), and resulted in a tokenizer with a vocabulary of 50,256 tokens (`saved_models/v_corpus`)
+
+![Demo of Ethics in Psychiatric Genomics](https://github.com/markmusic27/ethical-genomics/blob/main/public/images/readme.png?raw=true)
+
+Byte Pair Encoding is the backbone of most modern LLM tokenization. It was popularized by the GPT-2 paper ["Language Models are Unsupervised Multitask Learners"](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf), where OpenAI used it, in combination with Regex splitting, to create GPT-2's 50,257 token vocabulary.
 
 > **Radford et al., 2019**
 > This input representation allows us to combine the empirical benefits of word-level LMs with the generality of byte-level approaches. Since our approach can assign a probability to any Unicode string, this allows us to evaluate our LMs on any dataset regardless of pre-processing, tokenization, or vocab size.
 
-![Demo of Ethics in Psychiatric Genomics](https://github.com/markmusic27/ethical-genomics/blob/main/public/images/readme.png?raw=true)
