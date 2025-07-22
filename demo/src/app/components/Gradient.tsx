@@ -19,8 +19,11 @@ export const Gradient = () => {
         v2.currentTime = v1.currentTime;
       }
       if (v1.paused !== v2.paused) {
-        if (v1.paused) v2.pause();
-        else v2.play();
+        if (v1.paused) {
+          void v2.pause();
+        } else {
+          void v2.play();
+        }
       }
     };
 
