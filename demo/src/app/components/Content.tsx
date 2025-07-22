@@ -5,6 +5,7 @@ import InputBox from "./InputBox";
 import { BaseBox } from "./BaseBox";
 import WhitespaceToggle from "./WhitespaceToggle";
 import HighlightedSegments from "./HighlightedSegments";
+import TokenizedSegments from "./TokenizedSegments";
 
 export const Content = () => {
   const [windowWidth, setWindowWidth] = useState<number | undefined>(undefined);
@@ -76,6 +77,19 @@ export const Content = () => {
           </BaseBox>
 
           {/*  tokenized */}
+          <BaseBox className="flex flex-row">
+            <TokenizedSegments
+              tokens={[
+                1023, 2045, 3567, 4789, 5123, 6789, 7890, 8912, 9345, 10234,
+                12345, 14567, 16789, 18901, 20345, 23456, 26789, 29876, 31234,
+                34567,
+              ]}
+              onHover={(index) => {
+                console.log("hover", index);
+              }}
+            />
+          </BaseBox>
+
           <div></div>
         </div>
       </div>
